@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Youtube Crawler</title>
+    <style>
+        textarea {
+            width: 500px;
+        }
+
+        #path {
+            min-width: 500px;
+        }
+
+        #html{
+            min-width: 800px;
+        }
+
+        #result {
+            width:100%;
+            min-height: 500px;
+        }
+        button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<h1> 프로그램 설명</h1>
+
+<h3>4k video downloader 용 csv 파일 제작해주시는 프로그램 : 어떤 유튜버의 동영상들을 모두 다운로드 받을 수 있다.</h3>
+4k video downloader 링크 : <a href="https://www.4kdownload.com/ko/download" target="_blank">https://www.4kdownload.com/ko/download</a><br><br>
+
+
+1) 유튜브 채널에서 어떤 채널의 동영상 목록에서 계속 스크롤을 내려서 모든 영상이 나오게 한 다음에, (키보드에 500원짜리 누르면 편함)<br>
+2) 크롬 콘솔창 (윈도우의 경우 F12) 을 열어주시고 Elements 에 나오는 html 내용들을 긁어주셔서 하단의 html 붙일 곳에 넣어주신뒤<br>
+3) 윈도우 저장될 폴더 경로를 적어주시고, 변환 버튼을 눌러주세요!<br>
+4) 저장을 원하시면, 결과 저장을 눌러주시면 csv 파일로 저장이 됩니다
+5) 4k video downloader 에서  [ 파일 - 다운로드 링크 가져오기 ] 를 하시면 됩니다.<br><br>
+
+<img src="download.png"><br><br>
+
+<hr>
+
+<h3>윈도우 지정 폴더 (다운로드 저장될 폴더명 지정)</h3>
+<input id="path" type="text" value="C:\downloads\">
+
+<h3>HTML 붙일 곳</h3>
+<textarea id="html"><a id="video-title" class="yt-simple-endpoint style-scope ytd-grid-video-renderer" title='테스트?\":<>' href="/watch?v=비디오주소">타이틀 메시지</a></textarea>
+<br>
+<button id="convert">변환</button>
+<button id="save">결과 저장</button>
+
+<h3>csv 결과 파일</h3>
+<textarea id="result"></textarea>
+
+<script>
+
+    class YoutubeVideo {
+        constructor(title, href) {
+            this.title = title.replace(/[\\/\:\*\"\?\<\>|]/gi, '')
+            this.href = href
+        }
+        getAddr(path){
+            const str = `https://www.youtube.com${this.href};${this.title};${path}${this.title}.mp4`
+            console.log(str)
+            return str
+        }
+    }
+
+
+    function save() {
+        var a = document.createElement('a');
+        with (a) {
+            const str =document.getElementById('result').value
+            href='data:text/csv;base64,' +  btoa(unescape(encodeURIComponent(str)))
+            download='vidoeList4donwloader.csv';
+        }
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    document.getElementById("save").addEventListener("click", save)
+
+    function createDom(string) {
+        const div = document.createElement('div')
+        div.innerHTML = string
+        return div.firstChild
+    }
+
+    document.getElementById("convert").addEventListener("click", (e) => {
+        console.log("변환!");
+
+        const html = document.getElementById("html").value
+        const videos = []
+        let from = 0, to = 0
+
+        while (true) {
+            from = html.indexOf(`<a id="video-title`, from)
+            to = html.indexOf("</a>", from) + 4
+            if (from == -1) break
+            videos.push(html.substring(from, to))
+            from = to
+        }
+
+        const path = document.getElementById("path").value
+        document.getElementById("result").value = videos.map(s => createDom(s))
+            .map(aTag => new YoutubeVideo(aTag.getAttribute("title"), aTag.getAttribute("href")))
+            .map(v => v.getAddr(path)).join("\n")
+    })
+
+
+</script>
+
+</body>
+</html>
