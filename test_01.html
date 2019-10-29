@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+재귀 함수의 예
+
+
+<script>
+
+    let i = 0
+    let result = false
+    function timeout(func){
+        console.log('타임아웃 in func ', i)
+        i++
+        if(i==100){
+            result = true
+        }
+        func()
+    }
+
+    const next = _ => result || timeout(next)
+    timeout(next)
+
+</script>
+
+</body>
+</html>

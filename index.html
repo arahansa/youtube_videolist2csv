@@ -33,6 +33,15 @@
 
     </style>
 
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-57986352-3"></script>
+
+    <script src="ext.js"></script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
 </head>
 <body>
 
@@ -61,80 +70,19 @@
 
 <h3>HTML 붙일 곳</h3>
 <textarea id="html"><a id="video-title" class="yt-simple-endpoint style-scope ytd-grid-video-renderer" title='테스트?\":<>' href="/watch?v=비디오주소">타이틀 메시지</a></textarea>
+
 <br>
+<button id="reset">text area 초기화</button>
 <button id="convert">변환</button>
 <button id="save">결과 저장</button>
 
 <h3>csv 결과 파일</h3>
 <textarea id="result"></textarea>
 
-<script>
-
-    class YoutubeVideo {
-        constructor(title, href) {
-            this.title = title.replace(/[\\/\:\*\"\?\<\>|]/gi, '')
-            this.href = href
-        }
-        getAddr(path){
-            const str = `https://www.youtube.com${this.href};${this.title};${path}${this.title}.mp4`
-            console.log(str)
-            return str
-        }
-    }
 
 
-    function save() {
-        var a = document.createElement('a');
-        with (a) {
-            const str =document.getElementById('result').value
-            href='data:text/csv;base64,' +  btoa(unescape(encodeURIComponent(str)))
-            download='vidoeList4donwloader.csv';
-        }
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-
-    document.getElementById("save").addEventListener("click", save)
-
-    function createDom(string) {
-        const div = document.createElement('div')
-        div.innerHTML = string
-        return div.firstChild
-    }
-
-    document.getElementById("convert").addEventListener("click", (e) => {
-        console.log("변환!");
-
-        const html = document.getElementById("html").value
-        const videos = []
-        let from = 0, to = 0
-
-        while (true) {
-            from = html.indexOf(`<a id="video-title`, from)
-            to = html.indexOf("</a>", from) + 4
-            if (from == -1) break
-            videos.push(html.substring(from, to))
-            from = to
-        }
-
-        const path = document.getElementById("path").value
-        document.getElementById("result").value = videos.map(s => createDom(s))
-            .map(aTag => new YoutubeVideo(aTag.getAttribute("title"), aTag.getAttribute("href")))
-            .map(v => v.getAddr(path)).join("\n")
-    })
-
-
-</script>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-57986352-3"></script>
 <div id="disqus_thread"></div>
-<script src="ext.js"></script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-
-
-
+<script src="index_01.js"></script>
 </body>
 </html>
